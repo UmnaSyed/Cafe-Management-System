@@ -1,4 +1,4 @@
-// Table Reservation
+
 class TableReservation {
 private:
     string reservedTables[MAX_TABLES];
@@ -24,7 +24,7 @@ public:
     }
 
     void viewReservations() {
-        cout << "\n--- RESERVATIONS ---\n";
+      
         bool found = false;
         for (int i = 0; i < MAX_TABLES; i++) {
             if (reservedTables[i] != "") {
@@ -63,7 +63,6 @@ public:
     }
 };
 
-// Order
 class Order {
 private:
     Item orderItems[MAX_ORDER_ITEMS];
@@ -94,7 +93,6 @@ public:
     }
 
     void printBill(const string& customerName) {
-        cout << "\n--- BILL ---\n";
         for (int i = 0; i < orderCount; i++) {
             cout << orderItems[i].name << " x" << orderQty[i] << " = $" << orderItems[i].price * orderQty[i] << endl;
         }
