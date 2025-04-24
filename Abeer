@@ -1,0 +1,82 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <string>
+using namespace std;
+
+const int MAX_ITEMS = 100;
+const int MAX_STAFF = 50;
+const int MAX_ORDER_ITEMS = 50;
+const int MAX_TABLES = 20;
+
+// Item
+class Item {
+public:
+    string name;
+    double price;
+    string category;
+
+    Item(const string& n = "Invalid", double p = 0.0, const string& cat = "General") : name(n), price(p), category(cat) {}
+};
+
+// Menu
+class Menu {
+private:
+    Item items[MAX_ITEMS];
+    int itemCount;
+
+public:
+    Menu() : itemCount(0) {}
+
+    void addItem(const string& name, double price, const string& category) {
+        if (itemCount < MAX_ITEMS) {
+            items[itemCount] = Item(name, price, category);
+            itemCount++;
+        }
+    }
+
+    void displayMenu() {
+        cout << "\n--- MENU ---\n";
+        string categories[] = {"Drinks", "Snacks", "Main Course"};
+        for (int i = 0; i < 3; i++) {
+            cout << "\nCategory: " << categories[i] << endl;
+            for (int j = 0; j < itemCount; j++) {
+                if (items[j].category == categories[i]) {
+                    cout << j + 1 << ". " << items[j].name << " - $" << items[j].price << endl;
+                }
+            }
+        }
+    }
+
+    Item getItem(int index) {
+        if (index >= 0 && index < itemCount) {
+            return items[index];
+        }
+        return Item();
+    }
+
+    void loadFromFile(const string& filename = "Menu.txt") {
+        ifstream file(filename);
+        string line;
+        while (getline(file, line)) {
+            size_t pos1 = line.find(',');
+            size_t pos2 = line.rfind(',');
+
+            if (pos1 != string::npos && pos2 != string::npos && pos1 != pos2) {
+                string name = line.substr(0, pos1);
+                double price = stod(line.substr(pos1 + 1, pos2 - pos1 - 1));
+                string category = line.substr(pos2 + 1);
+                addItem(name, price, category);
+            }
+        }
+        file.close();
+    }
+
+    void saveToFile(const string& filename = "Menu.txt") {
+        ofstream file(filename);
+        for (int i = 0; i < itemCount; i++) {
+            file << items[i].name << "," << items[i].price << "," << items[i].category << endl;
+        }
+        file.close();
+    }
+};
