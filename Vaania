@@ -1,0 +1,68 @@
+// Main
+int main() {
+    Menu menu;
+    menu.loadFromFile();
+
+    TableReservation tableReservation;
+    tableReservation.loadFromFile();
+
+    // Display options to the customer
+    char choice;
+    while (true) {
+        cout << "\n--- MENU OPTIONS ---\n";
+        cout << "1. View Menu\n";
+        cout << "2. Place Order\n";
+        cout << "3. Reserve Table\n";
+        cout << "4. View Reservations\n";
+        cout << "5. Exit\n";
+        cout << "Select an option: ";
+        cin >> choice;
+        cin.ignore();
+
+        if (choice == '1') {
+            menu.displayMenu();
+        }
+        else if (choice == '2') {
+            string customerName;
+            cout << "Enter Customer Name: ";
+            getline(cin, customerName);
+
+            Order order;
+            char cont = 'y';
+            while (cont == 'y') {
+                menu.displayMenu();
+                int itemNo, qty;
+                cout << "Enter item number: ";
+                cin >> itemNo;
+                cout << "Enter quantity: ";
+                cin >> qty;
+                Item selected = menu.getItem(itemNo - 1);
+                order.addItem(selected, qty);
+                cout << "Add more items? (y/n): ";
+                cin >> cont;
+            }
+
+            order.printBill(customerName);
+        }
+        else if (choice == '3') {
+            int tableNumber;
+            string customerName;
+            cout << "Enter customer name: ";
+            cin.ignore();
+            getline(cin, customerName);
+            cout << "Enter table number (1-" << MAX_TABLES << "): ";
+            cin >> tableNumber;
+            tableReservation.reserveTable(tableNumber, customerName);
+        }
+        else if (choice == '4') {
+            tableReservation.viewReservations();
+        }
+        else if (choice == '5') {
+            tableReservation.saveToFile();
+            break;
+        }
+    }
+
+    return 0;
+}
+
