@@ -4,12 +4,12 @@
 #include <string>
 using namespace std;
 
-const int MAX_ITEMS = 100;
-const int MAX_STAFF = 50;
-const int MAX_ORDER_ITEMS = 50;
-const int MAX_TABLES = 20;
+const int MAX_ITEMS = 20;
+const int MAX_STAFF = 30;
+const int MAX_ORDER_ITEMS = 30;
+const int MAX_TABLES = 10;
 
-// Item
+
 class Item {
 public:
     string name;
@@ -19,7 +19,7 @@ public:
     Item(const string& n = "Invalid", double p = 0.0, const string& cat = "General") : name(n), price(p), category(cat) {}
 };
 
-// Menu
+
 class Menu {
 private:
     Item items[MAX_ITEMS];
