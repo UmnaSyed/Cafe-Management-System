@@ -1,0 +1,121 @@
+// Table Reservation
+class TableReservation {
+private:
+    string reservedTables[MAX_TABLES];
+
+public:
+    TableReservation() {
+        for (int i = 0; i < MAX_TABLES; i++) {
+            reservedTables[i] = "";
+        }
+    }
+
+    void reserveTable(int tableNumber, const string& customerName) {
+        if (tableNumber > 0 && tableNumber <= MAX_TABLES) {
+            if (reservedTables[tableNumber - 1] == "") {
+                reservedTables[tableNumber - 1] = customerName;
+                cout << "Table " << tableNumber << " reserved for " << customerName << endl;
+            } else {
+                cout << "Table " << tableNumber << " is already reserved.\n";
+            }
+        } else {
+            cout << "Invalid table number.\n";
+        }
+    }
+
+    void viewReservations() {
+        cout << "\n--- RESERVATIONS ---\n";
+        bool found = false;
+        for (int i = 0; i < MAX_TABLES; i++) {
+            if (reservedTables[i] != "") {
+                cout << "Table " << i + 1 << ": " << reservedTables[i] << endl;
+                found = true;
+            }
+        }
+        if (!found) {
+            cout << "No reservations found.\n";
+        }
+    }
+
+    void saveToFile(const string& filename = "Reservations.txt") {
+        ofstream file(filename);
+        for (int i = 0; i < MAX_TABLES; i++) {
+            if (reservedTables[i] != "") {
+                file << "Table " << i + 1 << ": " << reservedTables[i] << endl;
+            }
+        }
+        file.close();
+    }
+
+    void loadFromFile(const string& filename = "Reservations.txt") {
+        ifstream file(filename);
+        string line;
+        while (getline(file, line)) {
+            int tableNumber;
+            size_t pos = line.find(":");
+            if (pos != string::npos) {
+                tableNumber = stoi(line.substr(5, pos - 5));
+                string customerName = line.substr(pos + 2);
+                reservedTables[tableNumber - 1] = customerName;
+            }
+        }
+        file.close();
+    }
+};
+
+// Order
+class Order {
+private:
+    Item orderItems[MAX_ORDER_ITEMS];
+    int orderQty[MAX_ORDER_ITEMS];
+    int orderCount;
+    double total;
+    bool discountApplied;
+
+public:
+    Order() : orderCount(0), total(0.0), discountApplied(false) {}
+
+    void addItem(const Item& item, int qty) {
+        if (orderCount < MAX_ORDER_ITEMS) {
+            orderItems[orderCount] = item;
+            orderQty[orderCount] = qty;
+            total += item.price * qty;
+            orderCount++;
+        }
+    }
+
+    double calculateTotal() {
+        double finalTotal = total;
+        if (total > 50 && !discountApplied) {
+            finalTotal -= total * 0.10;  // 10% discount for bills above $50
+            discountApplied = true;
+        }
+        return finalTotal;
+    }
+
+    void printBill(const string& customerName) {
+        cout << "\n--- BILL ---\n";
+        for (int i = 0; i < orderCount; i++) {
+            cout << orderItems[i].name << " x" << orderQty[i] << " = $" << orderItems[i].price * orderQty[i] << endl;
+        }
+
+        double finalAmount = calculateTotal();
+        cout << "Total: $" << finalAmount << endl;
+        if (discountApplied) {
+            cout << "Discount applied: 10%\n";
+        }
+
+        string filename = "Receipt_" + customerName + ".txt";
+        ofstream file(filename);
+        file << "--- BILL ---\n";
+        for (int i = 0; i < orderCount; i++) {
+            file << orderItems[i].name << " x" << orderQty[i] << " = $" << orderItems[i].price * orderQty[i] << "\n";
+        }
+        file << "Total: $" << finalAmount << endl;
+        if (discountApplied) {
+            file << "Discount applied: 10%\n";
+        }
+        file.close();
+        cout << "Receipt saved to " << filename << endl;
+    }
+};
