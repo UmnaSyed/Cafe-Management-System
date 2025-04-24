@@ -1,4 +1,4 @@
-// Main
+
 int main() {
     Menu menu;
     menu.loadFromFile();
@@ -6,10 +6,8 @@ int main() {
     TableReservation tableReservation;
     tableReservation.loadFromFile();
 
-    // Display options to the customer
     char choice;
     while (true) {
-        cout << "\n--- MENU OPTIONS ---\n";
         cout << "1. View Menu\n";
         cout << "2. Place Order\n";
         cout << "3. Reserve Table\n";
