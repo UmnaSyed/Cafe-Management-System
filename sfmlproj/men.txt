@@ -1,0 +1,13 @@
+Coke,1.50,Drinks
+Pepsi,1.50,Drinks
+Orange Juice,2.00,Drinks
+Coffee,2.50,Drinks
+Tea,2.00,Drinks
+Chips,1.00,Snacks
+Fries,1.50,Snacks
+Nachos,2.00,Snacks
+Pizza,5.00,Main Course
+Burger,4.50,Main Course
+Pasta,6.00,Main Course
+Steak,10.00,Main Course
+Chicken Wings,7.00,Main Course

@@ -1,0 +1,13 @@
+--- DAILY SALES REPORT ---
+
+Item		Quantity Sold	Revenue
+-----------------------------------------
+Fries		17		$25.5
+Pizza		4		$20
+Coffee		13		$32.5
+Chicken Wings		4		$28
+Coke		10		$15
+
+Total Revenue: $121
+Total Cost:    $84.7
+Net Profit:    $36.3

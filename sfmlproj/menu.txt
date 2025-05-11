@@ -1,0 +1,10 @@
+Espresso 2.50
+Cappuccino 3.00
+Latte 3.25
+Americano 2.75
+Tea 1.50
+Burger 5.00
+Sandwich 4.00
+Fries 2.50
+Cake 3.00
+Juice 2.75

@@ -1,0 +1,6 @@
+----- Cafe Receipt -----
+Juice x18 = $49.50
+Espresso x2 = $5.00
+Cake x3 = $9.00
+------------------------
+Total: $63.50
