@@ -57,9 +57,9 @@ private:
     int selectedItemIndex;
     std::string quantityInput;
 
-    std::string currentInput; // For name input
-    std::string tableInput;   // For table number input
-    std::string reservationErrorMessage; // New: error message for reservations
+    std::string currentInput;
+    std::string tableInput; 
+    std::string reservationErrorMessage; 
     int selectedTable = -1;
     bool nameEntered = false;
 
