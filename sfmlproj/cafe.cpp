@@ -4,7 +4,6 @@
 #include <iomanip>
 #include <cctype>
 
-// Button implementation
 Button::Button(const std::string& text, float x, float y, sf::Font& font) {
     buttonText.setFont(font);
     buttonText.setString(text);
