@@ -5,10 +5,10 @@
 using namespace std;
 
 const int MAX_ITEMS = 20;
-const int MAX_STAFF = 30;
 const int MAX_ORDER_ITEMS = 30;
 const int MAX_TABLES = 10;
 
+// ===================== ITEM CLASS =====================
 class Item {
 public:
     string name;
@@ -18,7 +18,19 @@ public:
     Item(const string& n = "Invalid", double p = 0.0, const string& cat = "General") : name(n), price(p), category(cat) {}
 };
 
-class Menu {
+// ===================== ABSTRACT MENU BASE =====================
+class MenuBase {
+public:
+    virtual void addItem(const string&, double, const string&) = 0;
+    virtual void displayMenu() = 0;
+    virtual Item getItem(int index) = 0;
+    virtual void loadFromFile(const string& filename) = 0;
+    virtual void saveToFile(const string& filename) = 0;
+    virtual ~MenuBase() {}
+};
+
+// ===================== MENU CLASS =====================
+class Menu : public MenuBase {
 private:
     Item items[MAX_ITEMS];
     int itemCount;
@@ -26,34 +38,33 @@ private:
 public:
     Menu() : itemCount(0) {}
 
-    void addItem(const string& name, double price, const string& category) {
+    void addItem(const string& name, double price, const string& category) override {
         if (itemCount < MAX_ITEMS) {
-            items[itemCount] = Item(name, price, category);
-            itemCount++;
+            items[itemCount++] = Item(name, price, category);
         }
     }
 
-    void displayMenu() {
+    void displayMenu() override {
         cout << "\n--- MENU ---\n";
-        string categories[] = {"Drinks", "Snacks", "Main Course"};
-        for (int i = 0; i < 3; i++) {
-            cout << "\nCategory: " << categories[i] << endl;
+        string categories[] = { "Drinks", "Snacks", "Main Course" };
+        for (const string& cat : categories) {
+            cout << "\nCategory: " << cat << endl;
             for (int j = 0; j < itemCount; j++) {
-                if (items[j].category == categories[i]) {
+                if (items[j].category == cat) {
                     cout << j + 1 << ". " << items[j].name << " - $" << items[j].price << endl;
                 }
             }
         }
     }
 
-    Item getItem(int index) {
+    Item getItem(int index) override {
         if (index >= 0 && index < itemCount) {
             return items[index];
         }
         return Item();
     }
 
-    void loadFromFile(const string& filename = "men.txt") {
+    void loadFromFile(const string& filename = "men.txt") override {
         ifstream file(filename);
         string line;
         while (getline(file, line)) {
@@ -70,7 +81,7 @@ public:
         file.close();
     }
 
-    void saveToFile(const string& filename = "men.txt") {
+    void saveToFile(const string& filename = "men.txt") override {
         ofstream file(filename);
         for (int i = 0; i < itemCount; i++) {
             file << items[i].name << "," << items[i].price << "," << items[i].category << endl;
@@ -79,18 +90,27 @@ public:
     }
 };
 
-class TableReservation {
+// ===================== ABSTRACT RESERVATION BASE =====================
+class ReservationBase {
+public:
+    virtual void reserveTable(int tableNumber, const string& customerName) = 0;
+    virtual void viewReservations() = 0;
+    virtual void saveToFile(const string& filename) = 0;
+    virtual void loadFromFile(const string& filename) = 0;
+    virtual ~ReservationBase() {}
+};
+
+// ===================== TABLE RESERVATION CLASS =====================
+class TableReservation : public ReservationBase {
 private:
     string reservedTables[MAX_TABLES];
 
 public:
     TableReservation() {
-        for (int i = 0; i < MAX_TABLES; i++) {
-            reservedTables[i] = "";
-        }
+        for (int i = 0; i < MAX_TABLES; i++) reservedTables[i] = "";
     }
 
-    void reserveTable(int tableNumber, const string& customerName) {
+    void reserveTable(int tableNumber, const string& customerName) override {
         if (tableNumber > 0 && tableNumber <= MAX_TABLES) {
             if (reservedTables[tableNumber - 1] == "") {
                 reservedTables[tableNumber - 1] = customerName;
@@ -103,7 +123,7 @@ public:
         }
     }
 
-    void viewReservations() {
+    void viewReservations() override {
         bool found = false;
         for (int i = 0; i < MAX_TABLES; i++) {
             if (reservedTables[i] != "") {
@@ -116,7 +136,7 @@ public:
         }
     }
 
-    void saveToFile(const string& filename = "Reservations.txt") {
+    void saveToFile(const string& filename = "Reservations.txt") override {
         ofstream file(filename);
         for (int i = 0; i < MAX_TABLES; i++) {
             if (reservedTables[i] != "") {
@@ -126,14 +146,13 @@ public:
         file.close();
     }
 
-    void loadFromFile(const string& filename = "Reservations.txt") {
+    void loadFromFile(const string& filename = "Reservations.txt") override {
         ifstream file(filename);
         string line;
         while (getline(file, line)) {
-            int tableNumber;
             size_t pos = line.find(":");
             if (pos != string::npos) {
-                tableNumber = stoi(line.substr(5, pos - 5));
+                int tableNumber = stoi(line.substr(6, pos - 6));
                 string customerName = line.substr(pos + 2);
                 reservedTables[tableNumber - 1] = customerName;
             }
@@ -142,7 +161,16 @@ public:
     }
 };
 
-class SalesTracker {
+// ===================== ABSTRACT SALES BASE =====================
+class SalesBase {
+public:
+    virtual void recordSale(const string&, double, int) = 0;
+    virtual void generateReport(const string& filename) = 0;
+    virtual ~SalesBase() {}
+};
+
+// ===================== SALES TRACKER CLASS =====================
+class SalesTracker : public SalesBase {
 private:
     string soldItems[MAX_ITEMS];
     int soldQuantities[MAX_ITEMS];
@@ -152,7 +180,7 @@ private:
 public:
     SalesTracker() : soldCount(0) {}
 
-    void recordSale(const string& itemName, double price, int quantity) {
+    void recordSale(const string& itemName, double price, int quantity) override {
         for (int i = 0; i < soldCount; i++) {
             if (soldItems[i] == itemName) {
                 soldQuantities[i] += quantity;
@@ -167,7 +195,7 @@ public:
         }
     }
 
-    void generateReport(const string& filename = "Daily_Report.txt") {
+    void generateReport(const string& filename = "Daily_Report.txt") override {
         ofstream file(filename);
         double totalRevenue = 0.0, totalCost = 0.0;
         file << "--- DAILY SALES REPORT ---\n\n";
@@ -192,6 +220,7 @@ public:
     }
 };
 
+// ===================== ORDER CLASS =====================
 class Order {
 private:
     Item orderItems[MAX_ORDER_ITEMS];
@@ -199,10 +228,10 @@ private:
     int orderCount;
     double total;
     bool discountApplied;
-    SalesTracker* tracker;
+    SalesBase* tracker;
 
 public:
-    Order(SalesTracker* t = nullptr) : orderCount(0), total(0.0), discountApplied(false), tracker(t) {}
+    Order(SalesBase* t = nullptr) : orderCount(0), total(0.0), discountApplied(false), tracker(t) {}
 
     void addItem(const Item& item, int qty) {
         if (orderCount < MAX_ORDER_ITEMS) {
@@ -219,7 +248,7 @@ public:
     double calculateTotal() {
         double finalTotal = total;
         if (total > 50 && !discountApplied) {
-            finalTotal -= total * 0.10;  // 10% discount for bills above $50
+            finalTotal -= total * 0.10;
             discountApplied = true;
         }
         return finalTotal;
@@ -252,76 +281,97 @@ public:
 };
 
 int main() {
-    Menu menu;
-    menu.loadFromFile();
+    MenuBase* menu = new Menu();
+    menu->loadFromFile("men.txt");
 
-    TableReservation tableReservation;
-    tableReservation.loadFromFile();
+    ReservationBase* reservationSystem = new TableReservation();
+    reservationSystem->loadFromFile("Reservations.txt");
 
-    SalesTracker tracker;
+    SalesBase* sales = new SalesTracker();
 
-    char choice;
-    while (true) {
-        cout << "\n1. View Menu\n";
-        cout << "2. Place Order\n";
-        cout << "3. Reserve Table\n";
-        cout << "4. View Reservations\n";
-        cout << "5. Exit\n";
-        cout << "Select an option: ";
+    int choice;
+    do {
+        cout << "\n--- CAFE MANAGEMENT SYSTEM ---\n";
+        
+        cout << "0. Exit\n";
+        cout << "1. View Menu\n";
+        cout << "2. Reserve Table\n";
+        cout << "3. View Reservations\n";
+        cout << "4. Place Order\n";
+        cout << "5. Generate Daily Report\n";
+        
+        cout << "Enter choice: ";
         cin >> choice;
-        cin.ignore();
 
-        if (choice == '1') {
-            menu.displayMenu();
-        }
-        else if (choice == '2') {
-            string customerName;
-            cout << "Enter Customer Name: ";
-            getline(cin, customerName);
+        switch (choice) {
+            case 1:
+                menu->displayMenu();
+                break;
 
-            Order order(&tracker);
-            char cont = 'y';
-            while (cont == 'y' || cont == 'Y') {
-                menu.displayMenu();
-                int itemNo, qty;
-                cout << "Enter item number: ";
-                cin >> itemNo;
-                cout << "Enter quantity: ";
-                cin >> qty;
+            case 2: {
+                int tableNumber;
+                string customerName;
+                cout << "Enter table number (1-10): ";
+                cin >> tableNumber;
+                cout << "Enter customer name: ";
                 cin.ignore();
-                Item selected = menu.getItem(itemNo - 1);
-                order.addItem(selected, qty);
-                cout << "Add more items? (y/n): ";
-                cin >> cont;
+                getline(cin, customerName);
+                reservationSystem->reserveTable(tableNumber, customerName);
+                reservationSystem->saveToFile("Reservations.txt");
+                break;
+            }
+
+            case 3:
+                reservationSystem->viewReservations();
+                break;
+
+            case 4: {
+                string customerName;
+                cout << "Enter customer name: ";
                 cin.ignore();
+                getline(cin, customerName);
+
+                Order order(sales);
+                char moreItems;
+                do {
+                    menu->displayMenu();
+                    int itemIndex, quantity;
+                    cout << "Enter item number: ";
+                    cin >> itemIndex;
+                    cout << "Enter quantity: ";
+                    cin >> quantity;
+
+                    Item item = menu->getItem(itemIndex - 1);
+                    if (item.name != "Invalid") {
+                        order.addItem(item, quantity);
+                    } else {
+                        cout << "Invalid item selection.\n";
+                    }
+
+                    cout << "Add more items? (y/n): ";
+                    cin >> moreItems;
+                } while (moreItems == 'y' || moreItems == 'Y');
+
+                order.printBill(customerName);
+                break;
             }
-            order.printBill(customerName);
+
+            case 5:
+                sales->generateReport("Daily_Report.txt");
+                break;
+
+            case 0:
+                cout << "Exiting...\n";
+                break;
+
+            default:
+                cout << "Invalid choice.\n";
         }
-        else if (choice == '3') {
-            int tableNumber;
-            string customerName;
-            cout << "Enter customer name: ";
-            cin.ignore();
-            getline(cin, customerName);
-            cout << "Enter table number (1-" << MAX_TABLES << "): ";
-            cin >> tableNumber;
-            tableReservation.reserveTable(tableNumber, customerName);
-        }
-        else if (choice == '4') {
-            tableReservation.viewReservations();
-        }
-        else if (choice == '5') {
-            tableReservation.saveToFile();
-            char generateReport;
-            cout << "Do you want to generate today's report? (y/n): ";
-            cin >> generateReport;
-            if (generateReport == 'y' || generateReport == 'Y') {
-                tracker.generateReport();
-            }
-            cout << "Exiting system...\n";
-            break;
-        }
-    }
+    } while (choice != 0);
+
+    delete menu;
+    delete reservationSystem;
+    delete sales;
 
     return 0;
 }
